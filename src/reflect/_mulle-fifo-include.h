@@ -17,7 +17,7 @@
 // How to tweak the following mulle-thread #include
 //    remove:             `mulle-sourcetree mark mulle-thread no-header`
 //    rename:             `mulle-sde dependency|library set mulle-thread include whatever.h`
-//    toggle #import:     `mulle-sourcetree mark mulle-thread [no-]import`
+//    toggle #include:    `mulle-sourcetree mark mulle-thread [no-]import`
 //    toggle public:      `mulle-sourcetree mark mulle-thread [no-]public`
 //    toggle optional:    `mulle-sourcetree mark mulle-thread [no-]require`
 //    remove for os:      `mulle-sourcetree mark mulle-thread no-os-<osname>`
@@ -26,7 +26,7 @@
 // How to tweak the following mulle-allocator #include
 //    remove:             `mulle-sourcetree mark mulle-allocator no-header`
 //    rename:             `mulle-sde dependency|library set mulle-allocator include whatever.h`
-//    toggle #import:     `mulle-sourcetree mark mulle-allocator [no-]import`
+//    toggle #include:    `mulle-sourcetree mark mulle-allocator [no-]import`
 //    toggle public:      `mulle-sourcetree mark mulle-allocator [no-]public`
 //    toggle optional:    `mulle-sourcetree mark mulle-allocator [no-]require`
 //    remove for os:      `mulle-sourcetree mark mulle-allocator no-os-<osname>`

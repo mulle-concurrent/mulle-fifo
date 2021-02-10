@@ -1,5 +1,8 @@
+// Generated file. Don't edit. Edit mulle--pointerfifo64.h
+// then run ../bin/create-fifo-sources
+
 //
-//  mulle--pointerfifo64.h
+//  mulle--pointerfifo8192.h
 //  mulle-fifo
 //
 //  Created by Nat! on 10.02.2021
@@ -32,8 +35,8 @@
 //  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 //  POSSIBILITY OF SUCH DAMAGE.
 //
-#ifndef mulle__pointerfifo64_h__
-#define mulle__pointerfifo64_h__
+#ifndef mulle__pointerfifo8192_h__
+#define mulle__pointerfifo8192_h__
 
 #include "include.h"
 
@@ -45,16 +48,16 @@
  *       Fixed size for simplicity of implementation
  */
 
-struct mulle__pointerfifo64
+struct mulle__pointerfifo8192
 {
    mulle_atomic_pointer_t   n;        
    unsigned int             write;    // only accessed by producer
    unsigned int             read;     // only accessed by consumer
-   mulle_atomic_pointer_t   storage[ 64];
+   mulle_atomic_pointer_t   storage[ 8192];
 };
 
 
-static inline void   _mulle__pointerfifo64_init( struct mulle__pointerfifo64 *p)
+static inline void   _mulle__pointerfifo8192_init( struct mulle__pointerfifo8192 *p)
 {
    p->write = 0;
    p->read  = 0;
@@ -62,43 +65,43 @@ static inline void   _mulle__pointerfifo64_init( struct mulle__pointerfifo64 *p)
 }
 
 
-static inline void   _mulle__pointerfifo64_done( struct mulle__pointerfifo64 *p)
+static inline void   _mulle__pointerfifo8192_done( struct mulle__pointerfifo8192 *p)
 {
 }
 
 
-static inline unsigned int   _mulle__pointerfifo64_get_count( struct mulle__pointerfifo64 *p)
+static inline unsigned int   _mulle__pointerfifo8192_get_count( struct mulle__pointerfifo8192 *p)
 {
    return( (unsigned int) (uintptr_t) _mulle_atomic_pointer_read( &p->n));
 }
 
 
 
-static inline void   *_mulle__pointerfifo64_read( struct mulle__pointerfifo64 *p)
+static inline void   *_mulle__pointerfifo8192_read( struct mulle__pointerfifo8192 *p)
 {
    void   *pointer;
 
-   if( ! _mulle__pointerfifo64_get_count( p))
+   if( ! _mulle__pointerfifo8192_get_count( p))
       return( NULL);
 
    pointer  = _mulle_atomic_pointer_read( &p->storage[ p->read]);
-   p->read  = (p->read + 1) % 64;
+   p->read  = (p->read + 1) % 8192;
    _mulle_atomic_pointer_decrement( &p->n);
 
    return( pointer);
 }
 
 
-static inline int   _mulle__pointerfifo64_write( struct mulle__pointerfifo64 *p,
+static inline int   _mulle__pointerfifo8192_write( struct mulle__pointerfifo8192 *p,
                                                  void *pointer)
 {
    assert( pointer != NULL);
 
-   if( _mulle__pointerfifo64_get_count( p) == 64)
+   if( _mulle__pointerfifo8192_get_count( p) == 8192)
       return( -1);
 
    _mulle_atomic_pointer_write( &p->storage[ p->write], pointer);
-   p->write = (p->write + 1) % 64;
+   p->write = (p->write + 1) % 8192;
    _mulle_atomic_pointer_increment( &p->n);
 
    return( 0);

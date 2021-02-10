@@ -33,7 +33,18 @@ src/include.h
 
 set( PUBLIC_HEADERS
 src/mulle-fifo.h
+src/mulle--pointerfifo1024.h
+src/mulle--pointerfifo128.h
+src/mulle--pointerfifo16.h
+src/mulle--pointerfifo2048.h
+src/mulle--pointerfifo256.h
+src/mulle--pointerfifo32.h
+src/mulle--pointerfifo4096.h
+src/mulle--pointerfifo4.h
+src/mulle--pointerfifo512.h
 src/mulle--pointerfifo64.h
-src/mulle--pointerfifo.h
+src/mulle--pointerfifo8192.h
+src/mulle--pointerfifo8.h
+src/mulle-pointerfifo.h
 )
 

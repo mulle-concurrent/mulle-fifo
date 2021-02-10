@@ -6,7 +6,7 @@
 
 static void   producer( void *arg)
 {
-   struct mulle__pointerfifo  *fifo = arg;
+   struct mulle_pointerfifo  *fifo = arg;
    struct timespec            delay;
    int                        i;
 
@@ -21,7 +21,7 @@ static void   producer( void *arg)
       case 1 :
       case 2 :
       case 3 :
-         if( _mulle__pointerfifo_write( fifo, (void *) (intptr_t) i) == -1)
+         if( _mulle_pointerfifo_write( fifo, (void *) (intptr_t) i) == -1)
          {
             fprintf( stderr, "producer full\n");
          }
@@ -50,12 +50,12 @@ done:
 
 int  main( int argc, char *argv)
 {
-   struct mulle__pointerfifo  fifo;
+   struct mulle_pointerfifo  fifo;
    void                         *pointer;
    mulle_thread_t               producer_thread;
    struct timespec              delay;
 
-   _mulle__pointerfifo_init( &fifo, 100, NULL);
+   _mulle_pointerfifo_init( &fifo, 100, NULL);
 
    mulle_thread_create( producer, &fifo, &producer_thread);
 
@@ -68,7 +68,7 @@ int  main( int argc, char *argv)
       case 1 :
       case 2 :
       case 3 :
-         pointer = _mulle__pointerfifo_read( &fifo);
+         pointer = _mulle_pointerfifo_read( &fifo);
          if( ! pointer)
          {
             fprintf( stderr, "consumer empty\n");
@@ -90,7 +90,7 @@ int  main( int argc, char *argv)
    }
 
 done:
-   _mulle__pointerfifo_done( &fifo);
+   _mulle_pointerfifo_done( &fifo);
    mulle_thread_join( producer_thread);
 
    return( 0);

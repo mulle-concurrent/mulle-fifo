@@ -1,0 +1,29 @@
+#! /usr/bin/env bash
+
+print()
+{
+   local size="$1"
+
+   echo "// Generated file. Don't edit. Edit mulle--pointerfifo64.h"
+   echo "// then run ../bin/create-fifo-sources"
+   echo ""
+
+   sed -e "s/64/${size}/g" < mulle--pointerfifo64.h
+}
+
+
+PROJECT_DIR="`mulle-sde project-dir`"
+PROJECT_SOURCE_DIR="`mulle-sde environment get PROJECT_SOURCE_DIR`"
+PROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR:-src}"
+
+cd "${PROJECT_DIR}/${PROJECT_SOURCE_DIR}"
+
+for size in 4 8 16 32 128 256 512 1024 2048 4096 8192
+do
+   print ${size} > mulle--pointerfifo${size}.h
+   echo "Created \"mulle--pointerfifo${size}.h\"" >&2
+done
+
+mulle-sde reflect
+
+

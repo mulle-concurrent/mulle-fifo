@@ -1,10 +1,82 @@
 # mulle-fifo
 
-#### 🐍 mulle-fifo small fixed sized producer/consumer FIFOs
+#### 🐍 mulle-fifo fixed sized producer/consumer FIFOs holding `void *`
 
-Written for dual-thread configurations. There is a hardcoded 64 pointer sized
-mulle--pointerfifo64 FIFO and there is a variable sized mulle--pointerfifo.
-The size of the FIFOs can not be changed after init.
+Written for dual-thread configurations. There is a collection of hardcoded size
+FIFOs and there is a dynamic allocated FIFO.
+The size of the dynamic allocated FIFOs can not be changed after init.
+
+You can not store NULL pointers into the FIFO.
+
+There are FIFOs of sizes 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192.
+You can easily create your own custom size.
+
+
+## Usage 
+
+### Fixed
+
+This is for a fixed size 64 pointer FIFO. use `_mulle__pointerfifo128` for 
+128 pointer FIFO et.c
+
+```
+void   _mulle__pointerfifo64_init( struct mulle__pointerfifo64 *p)
+```
+
+Call this to initalize the FIFO for use.
+
+
+```
+void   _mulle__pointerfifo64_done( struct mulle__pointerfifo64 *p)
+```
+
+You can call this when no other thread needs the FIFO anymore.
+
+
+```
+unsigned int   _mulle__pointerfifo64_get_count( struct mulle__pointerfifo64 *p)
+```
+
+Get the number of pointers stored. Thread safe even for multiple threads.
+
+
+```
+void   *_mulle__pointerfifo64_read( struct mulle__pointerfifo64 *p)
+```
+
+Read from the FIFO. Will return NULL if empty. Will not block.
+Only one thread may access the read side.
+
+```
+int   _mulle__pointerfifo64_write( struct mulle__pointerfifo64 *p,
+                                   void *pointer)
+```
+
+Write to the FIFO. Will return -1 if full, 0 on success. Will not block.
+Only one thread may access the write side.
+
+
+### Dynamic
+
+The dynamic FIFO is like the static FIFO, except for the `init` and
+`done` functions:
+
+```
+void   _mulle__pointerfifo_init( struct mulle__pointerfifo64 *p, 
+                                 unsigned int size,
+                                 struct mulle_allocator *allocator)
+```
+
+Call this to initalize the FIFO for use. The size is set at runtime.
+
+
+```
+void   _mulle__pointerfifo_done( struct mulle__pointerfifo64 *p)
+```
+
+Call this to free the FIFO when no other thread needs it. This is necessary
+to avoid leaks.
+
 
 
 ## Add
