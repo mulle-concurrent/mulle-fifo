@@ -5,7 +5,7 @@
  *
  *      mulle-sde environment set MULLE_SOURCETREE_TO_C_INCLUDE_FILE DISABLE
  *
- *   To not generate any header files:
+ *   To not let mulle-sourcetree-to-c generate any header files:
  *
  *      mulle-sde environment set MULLE_SOURCETREE_TO_C_RUN DISABLE
  *
@@ -14,22 +14,28 @@
 #ifndef _mulle_fifo_include_h__
 #define _mulle_fifo_include_h__
 
-// How to tweak the following mulle-thread #include
+// You can tweak the following #include with these commands.
+// (Use 3F44B76F-7C7A-4AD4-A9AB-5146551EAC39 instead of mulle-thread if there are duplicate entries)
 //    remove:             `mulle-sourcetree mark mulle-thread no-header`
 //    rename:             `mulle-sde dependency|library set mulle-thread include whatever.h`
+//    reorder:            `mulle-sourcetree move mulle-thread <up|down>`
 //    toggle #include:    `mulle-sourcetree mark mulle-thread [no-]import`
 //    toggle public:      `mulle-sourcetree mark mulle-thread [no-]public`
 //    toggle optional:    `mulle-sourcetree mark mulle-thread [no-]require`
-//    remove for os:      `mulle-sourcetree mark mulle-thread no-os-<osname>`
-# include <mulle-thread/mulle-thread.h>   // mulle-thread
+//    remove for platform:`mulle-sourcetree mark mulle-thread no-platform-<uname>`
+//        (use mulle-sourcetree-to-c --unames for known values)
+#include <mulle-thread/mulle-thread.h>   // mulle-thread
 
-// How to tweak the following mulle-allocator #include
+// You can tweak the following #include with these commands.
+// (Use C3DD90B8-8890-4D16-AB56-FDE2EF2AE35E instead of mulle-allocator if there are duplicate entries)
 //    remove:             `mulle-sourcetree mark mulle-allocator no-header`
 //    rename:             `mulle-sde dependency|library set mulle-allocator include whatever.h`
+//    reorder:            `mulle-sourcetree move mulle-allocator <up|down>`
 //    toggle #include:    `mulle-sourcetree mark mulle-allocator [no-]import`
 //    toggle public:      `mulle-sourcetree mark mulle-allocator [no-]public`
 //    toggle optional:    `mulle-sourcetree mark mulle-allocator [no-]require`
-//    remove for os:      `mulle-sourcetree mark mulle-allocator no-os-<osname>`
-# include <mulle-allocator/mulle-allocator.h>   // mulle-allocator
+//    remove for platform:`mulle-sourcetree mark mulle-allocator no-platform-<uname>`
+//        (use mulle-sourcetree-to-c --unames for known values)
+#include <mulle-allocator/mulle-allocator.h>   // mulle-allocator
 
 #endif

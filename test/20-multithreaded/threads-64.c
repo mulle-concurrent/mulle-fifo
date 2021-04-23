@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 
-static void   producer( void *arg)
+static mulle_thread_rval_t   producer( void *arg)
 {
    struct mulle__pointerfifo64  *fifo = arg;
    struct timespec              delay;
@@ -48,7 +48,7 @@ done:
 }
 
 
-int  main( int argc, char *argv)
+int  main( int argc, char *argv[])
 {
    struct mulle__pointerfifo64  fifo;
    void                         *pointer;
@@ -72,7 +72,7 @@ int  main( int argc, char *argv)
          if( ! pointer)
          {
             fprintf( stderr, "consumer empty\n");
-            continue;         
+            continue;
          }
          printf( "%ld\n", (long) (intptr_t) pointer); fflush( stdout);
          if( pointer == (void *) 1024)
@@ -86,7 +86,7 @@ int  main( int argc, char *argv)
          delay.tv_sec  = 0;
          delay.tv_nsec = rand() % (10000 / 5);
          nanosleep( &delay, NULL);
-      }         
+      }
    }
 
 done:

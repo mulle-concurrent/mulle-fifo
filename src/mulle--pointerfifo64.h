@@ -42,7 +42,9 @@
 
 /*
  * FIFO: single consumer thread / single producer thread only
- *       Fixed size for simplicity of implementation
+ *       Fixed size for simplicity of implementation. If you point to 
+ *       memory from the queue, be sure that you have issued a memory
+ *       barrier call after setting values into reused memory.
  */
 
 struct mulle__pointerfifo64
@@ -82,6 +84,30 @@ static inline void   *_mulle__pointerfifo64_read( struct mulle__pointerfifo64 *p
       return( NULL);
 
    pointer  = _mulle_atomic_pointer_read( &p->storage[ p->read]);
+   p->read  = (p->read + 1) % 64;
+   _mulle_atomic_pointer_decrement( &p->n);
+
+   return( pointer);
+}
+
+//
+// use this unless you only move actual void * sized info around, like 'int'
+// casted to void *. E.g. use this for char * strings, as they are stored 
+// in memory outside of the 4-8 pointer bytes.
+//
+static inline void   *_mulle__pointerfifo64_read_barrier( struct mulle__pointerfifo64 *p)
+{
+   void   *pointer;
+
+   if( ! _mulle__pointerfifo64_get_count( p))
+      return( NULL);
+
+   // get fresh look, now we don't need and atomic pointer read for the
+   // storage and the contents of whats pointed to with pointer is in sync
+   // with what was written
+   mulle_atomic_memory_barrier();
+
+   pointer  = _mulle_atomic_pointer_nonatomic_read( &p->storage[ p->read]);
    p->read  = (p->read + 1) % 64;
    _mulle_atomic_pointer_decrement( &p->n);
 

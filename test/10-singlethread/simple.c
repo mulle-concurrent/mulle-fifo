@@ -2,7 +2,7 @@
 
 
 
-int  main( int argc, char *argv)
+int  main( int argc, char *argv[])
 {
    struct mulle_pointerfifo   fifo;
    void                        *pointer;

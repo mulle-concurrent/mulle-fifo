@@ -12,12 +12,12 @@ There are FIFOs of sizes 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192.
 You can easily create your own custom size.
 
 
-## Usage 
+## Usage
 
 ### Fixed
 
-This is for a fixed size 64 pointer FIFO. use `_mulle__pointerfifo128` for 
-128 pointer FIFO et.c
+`mulle__pointerfifo64` is  a fixed size 64 pointer FIFO.
+Use `_mulle__pointerfifo128` for a 128 pointer FIFO etc.
 
 ```
 void   _mulle__pointerfifo64_init( struct mulle__pointerfifo64 *p)
@@ -62,7 +62,7 @@ The dynamic FIFO is like the static FIFO, except for the `init` and
 `done` functions:
 
 ```
-void   _mulle__pointerfifo_init( struct mulle__pointerfifo64 *p, 
+void   _mulle__pointerfifo_init( struct mulle__pointerfifo64 *p,
                                  unsigned int size,
                                  struct mulle_allocator *allocator)
 ```
