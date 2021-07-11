@@ -148,3 +148,15 @@ export MULLE_FIFO_NODETYPE="git"
 export MULLE_FIFO_URL="https://github.com/mulle-concurrent/mulle-fifo.git"
 
 
+#
+# mulle-testallocator branch: ${MULLE_TESTALLOCATOR_BRANCH}
+#
+export MULLE_TESTALLOCATOR_BRANCH="prerelease"
+
+
+#
+# mulle-fifo branch: ${MULLE_FIFO_BRANCH}
+#
+export MULLE_FIFO_BRANCH="prerelease"
+
+
