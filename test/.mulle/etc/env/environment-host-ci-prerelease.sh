@@ -11,6 +11,12 @@ export MULLE_TESTALLOCATOR_URL="https://github.com/mulle-core/mulle-testallocato
 
 
 #
+# mulle-testallocator branch: ${MULLE_TESTALLOCATOR_BRANCH}
+#
+export MULLE_TESTALLOCATOR_BRANCH="prerelease"
+
+
+#
 # mulle-thread nodetype: ${MULLE_THREAD_NODETYPE:-tar}
 #
 export MULLE_THREAD_NODETYPE="git"
@@ -146,12 +152,6 @@ export MULLE_FIFO_NODETYPE="git"
 # mulle-fifo url: ${MULLE_FIFO_URL:-https://github.com/mulle-concurrent/mulle-fifo/archive/${MULLE_TAG}.tar.gz}
 #
 export MULLE_FIFO_URL="https://github.com/mulle-concurrent/mulle-fifo.git"
-
-
-#
-# mulle-testallocator branch: ${MULLE_TESTALLOCATOR_BRANCH}
-#
-export MULLE_TESTALLOCATOR_BRANCH="prerelease"
 
 
 #
