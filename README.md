@@ -78,6 +78,10 @@ Call this to free the FIFO when no other thread needs it. This is necessary
 to avoid leaks.
 
 
+### You are here
+
+![Overview](overview.dot.svg)
+
 
 ## Add
 

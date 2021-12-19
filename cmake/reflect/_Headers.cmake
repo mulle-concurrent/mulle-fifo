@@ -36,6 +36,7 @@ set( PUBLIC_GENERATED_HEADERS
 src/reflect/_mulle-fifo-include.h
 src/reflect/_mulle-fifo-include-public.h
 src/reflect/_mulle-fifo-provide.h
+src/reflect/_mulle-fifo-versioncheck.h
 )
 
 #
