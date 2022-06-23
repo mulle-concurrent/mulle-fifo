@@ -29,8 +29,14 @@
 
 #include "_mulle-fifo-include.h"
 
-#ifndef MULLE_FIFO_EXTERN_GLOBAL
-# define MULLE_FIFO_EXTERN_GLOBAL MULLE_C_EXTERN_GLOBAL
+#ifdef MULLE_FIFO_BUILD
+# define MULLE_FIFO_GLOBAL    MULLE_C_GLOBAL
+#else
+# if defined( MULLE_FIFO_INCLUDE_DYNAMIC) || (defined( MULLE_INCLUDE_DYNAMIC) && ! defined( MULLE_FIFO_INCLUDE_STATIC))
+#  define MULLE_FIFO_GLOBAL   MULLE_C_EXTERN_GLOBAL
+# else
+#  define MULLE_FIFO_GLOBAL   extern
+# endif
 #endif
 
 

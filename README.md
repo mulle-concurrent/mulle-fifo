@@ -3,10 +3,9 @@
 #### 🐍 mulle-fifo fixed sized producer/consumer FIFOs holding `void *`
 
 Written for dual-thread configurations. There is a collection of hardcoded size
-FIFOs and there is a dynamic allocated FIFO.
-The size of the dynamic allocated FIFOs can not be changed after init.
+FIFOs and there is a FIFO which size can be set at runtime.
 
-You can not store NULL pointers into the FIFO.
+You can not store NULL pointers into the FIFOs.
 
 There are FIFOs of sizes 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192.
 You can easily create your own custom size.
