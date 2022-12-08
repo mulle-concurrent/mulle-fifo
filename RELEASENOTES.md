@@ -1,3 +1,8 @@
+## 0.1.0
+
+* added NULL checking variations of `mulle_pointerfifo` functions
+
+
 ### 0.0.3
 
 * change GLOBALs for Windows
