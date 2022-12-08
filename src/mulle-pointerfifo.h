@@ -67,6 +67,14 @@ static inline void   _mulle_pointerfifo_init( struct mulle_pointerfifo *p,
    p->storage   = mulle_allocator_malloc( allocator, size * sizeof( mulle_atomic_pointer_t));
 }
 
+static inline void   mulle_pointerfifo_init( struct mulle_pointerfifo *p,
+                                             unsigned int size,
+                                             struct mulle_allocator *allocator)
+{
+   if( p)
+      _mulle_pointerfifo_init( p, size, allocator);
+}
+
 
 static inline void   _mulle_pointerfifo_done( struct mulle_pointerfifo *p)
 {
@@ -74,10 +82,27 @@ static inline void   _mulle_pointerfifo_done( struct mulle_pointerfifo *p)
 }
 
 
+static inline void   mulle_pointerfifo_done( struct mulle_pointerfifo *p)
+{
+   if( p)
+      _mulle_pointerfifo_done( p);
+}
+
+
+
 static inline unsigned int   _mulle_pointerfifo_get_count( struct mulle_pointerfifo *p)
 {
    return( (unsigned int) (uintptr_t) _mulle_atomic_pointer_read( &p->n));
 }
+
+
+static inline unsigned int   mulle_pointerfifo_get_count( struct mulle_pointerfifo *p)
+{
+   if( ! p)
+      return( 0);
+   return( _mulle_pointerfifo_get_count( p));
+}
+
 
 
 
@@ -96,6 +121,16 @@ static inline void   *_mulle_pointerfifo_read( struct mulle_pointerfifo *p)
 }
 
 
+static inline void   *mulle_pointerfifo_read( struct mulle_pointerfifo *p)
+{
+   if( ! p)
+      return( NULL);
+
+   return( _mulle_pointerfifo_read( p));
+}
+
+
+
 static inline int   _mulle_pointerfifo_write( struct mulle_pointerfifo *p,
                                                  void *pointer)
 {
@@ -107,6 +142,16 @@ static inline int   _mulle_pointerfifo_write( struct mulle_pointerfifo *p,
    _mulle_atomic_pointer_increment( &p->n);
 
    return( 0);
+}
+
+
+static inline int   mulle_pointerfifo_write( struct mulle_pointerfifo *p,
+                                             void *pointer)
+{
+   if( ! p)
+      return( -1);
+
+   return( _mulle_pointerfifo_write( p, pointer));
 }
 
 #endif

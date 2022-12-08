@@ -18,35 +18,35 @@ You can easily create your own custom size.
 `mulle__pointerfifo64` is  a fixed size 64 pointer FIFO.
 Use `_mulle__pointerfifo128` for a 128 pointer FIFO etc.
 
-```
+``` c
 void   _mulle__pointerfifo64_init( struct mulle__pointerfifo64 *p)
 ```
 
 Call this to initalize the FIFO for use.
 
 
-```
+``` c
 void   _mulle__pointerfifo64_done( struct mulle__pointerfifo64 *p)
 ```
 
 You can call this when no other thread needs the FIFO anymore.
 
 
-```
+``` c
 unsigned int   _mulle__pointerfifo64_get_count( struct mulle__pointerfifo64 *p)
 ```
 
 Get the number of pointers stored. Thread safe even for multiple threads.
 
 
-```
+``` c
 void   *_mulle__pointerfifo64_read( struct mulle__pointerfifo64 *p)
 ```
 
 Read from the FIFO. Will return NULL if empty. Will not block.
 Only one thread may access the read side.
 
-```
+``` c
 int   _mulle__pointerfifo64_write( struct mulle__pointerfifo64 *p,
                                    void *pointer)
 ```
@@ -61,20 +61,17 @@ The dynamic FIFO is like the static FIFO, except for the `init` and
 `done` functions:
 
 ```
-void   _mulle__pointerfifo_init( struct mulle__pointerfifo64 *p,
-                                 unsigned int size,
-                                 struct mulle_allocator *allocator)
+void   mulle_pointerfifo_init( struct mulle_pointerfifo *p,
+                               unsigned int size,
+                               struct mulle_allocator *allocator)
 ```
 
-Call this to initalize the FIFO for use. The size is set at runtime.
+Call `mulle_pointerfifo_init` to initalize the FIFO for use.
+The size is set with the `size` parameter.
 
-
-```
-void   _mulle__pointerfifo_done( struct mulle__pointerfifo64 *p)
-```
-
-Call this to free the FIFO when no other thread needs it. This is necessary
-to avoid leaks.
+Call `mulle_pointerfifo_done` to free the FIFO when no other thread needs it.
+This is necessary to avoid leaks. Use `mulle_pointerfifo_read` and
+`mulle_pointerfifo_write` for access. The pointerfifo will not block.
 
 
 ### You are here
@@ -97,9 +94,9 @@ mulle-sde dependency add --c --github mulle-concurrent mulle-fifo
 Use [mulle-sde](//github.com/mulle-sde) to build and install mulle-fifo
 and all its dependencies:
 
-```
+``` sh
 mulle-sde install --prefix /usr/local \
-   //github.com/mulle-concurrent/mulle-fifo/archive/latest.tar.gz
+   https://github.com/mulle-concurrent/mulle-fifo/archive/latest.tar.gz
 ```
 
 ### Manual Installation
@@ -114,15 +111,13 @@ Requirements                                               | Description
 
 Install into `/usr/local`:
 
-```
-mkdir build 2> /dev/null
-(
-   cd build ;
-   cmake -DCMAKE_INSTALL_PREFIX=/usr/local \
-         -DCMAKE_PREFIX_PATH=/usr/local \
-         -DCMAKE_BUILD_TYPE=Release .. ;
-   make install
-)
+``` sh
+cmake -B build \
+      -DCMAKE_INSTALL_PREFIX=/usr/local \
+      -DCMAKE_PREFIX_PATH=/usr/local \
+      -DCMAKE_BUILD_TYPE=Release &&
+cmake --build build --config Release &&
+cmake --install build --config Release
 ```
 
 ### Steal
