@@ -8,7 +8,7 @@
    "license" : "UNLICENSED",
    "repository" : {
       "type" : "git",
-      "url" : "mulle-concurrent/mulle-fifo"
+      "url" : "github:mulle-concurrent/mulle-fifo"
    },
    "dependencies" : {
       "mulle-thread" : "git://github.com/mulle-concurrent/mulle-thread",
