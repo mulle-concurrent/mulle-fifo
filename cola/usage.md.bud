@@ -1,0 +1,63 @@
+## Usage
+
+### Fixed
+
+`mulle__pointerfifo64` is  a fixed size 64 pointer FIFO.
+Use `_mulle__pointerfifo128` for a 128 pointer FIFO etc.
+
+``` c
+void   _mulle__pointerfifo64_init( struct mulle__pointerfifo64 *p)
+```
+
+Call this to initalize the FIFO for use.
+
+
+``` c
+void   _mulle__pointerfifo64_done( struct mulle__pointerfifo64 *p)
+```
+
+You can call this when no other thread needs the FIFO anymore.
+
+
+``` c
+unsigned int   _mulle__pointerfifo64_get_count( struct mulle__pointerfifo64 *p)
+```
+
+Get the number of pointers stored. Thread safe even for multiple threads.
+
+
+``` c
+void   *_mulle__pointerfifo64_read( struct mulle__pointerfifo64 *p)
+```
+
+Read from the FIFO. Will return NULL if empty. Will not block.
+Only one thread may access the read side.
+
+``` c
+int   _mulle__pointerfifo64_write( struct mulle__pointerfifo64 *p,
+                                   void *pointer)
+```
+
+Write to the FIFO. Will return -1 if full, 0 on success. Will not block.
+Only one thread may access the write side.
+
+
+### Dynamic
+
+The dynamic FIFO is like the static FIFO, except for the `init` and
+`done` functions:
+
+```
+void   mulle_pointerfifo_init( struct mulle_pointerfifo *p,
+                               unsigned int size,
+                               struct mulle_allocator *allocator)
+```
+
+Call `mulle_pointerfifo_init` to initalize the FIFO for use.
+The size is set with the `size` parameter.
+
+Call `mulle_pointerfifo_done` to free the FIFO when no other thread needs it.
+This is necessary to avoid leaks. Use `mulle_pointerfifo_read` and
+`mulle_pointerfifo_write` for access. The pointerfifo will not block.
+
+
