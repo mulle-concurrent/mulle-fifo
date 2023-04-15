@@ -11,6 +11,12 @@ There are FIFOs of sizes 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192.
 You can easily create your own custom size.
 
 
+| Release Version                                       | Release Notes
+|-------------------------------------------------------|--------------
+| ![Mulle kybernetiK tag](https://img.shields.io/github/tag//mulle-fifo.svg?branch=release) [![Build Status](https://github.com//mulle-fifo/workflows/CI/badge.svg?branch=release)](//github.com//mulle-fifo/actions)| [RELEASENOTES](RELEASENOTES.md) |
+
+
+
 ## Usage
 
 ### Fixed
@@ -74,42 +80,50 @@ This is necessary to avoid leaks. Use `mulle_pointerfifo_read` and
 `mulle_pointerfifo_write` for access. The pointerfifo will not block.
 
 
-### You are here
 
-![Overview](overview.dot.svg)
+
 
 
 ## Add
 
 Use [mulle-sde](//github.com/mulle-sde) to add mulle-fifo to your project:
 
-``` console
-mulle-sde dependency add --c --github mulle-concurrent mulle-fifo
+``` sh
+mulle-sde add github:/
 ```
+
+To only add the sources of mulle-fifo with dependency
+sources use [clib](https://github.com/clibs/clib):
+
+
+``` sh
+clib install --out src/ /
+```
+
+Add `-isystem src/` to your `CFLAGS` and compile all the sources that were downloaded with your project.
+
 
 ## Install
 
-### mulle-sde
+### Install with mulle-sde
 
-Use [mulle-sde](//github.com/mulle-sde) to build and install mulle-fifo
-and all its dependencies:
+Use [mulle-sde](//github.com/mulle-sde) to build and install mulle-fifo and all dependencies:
 
 ``` sh
 mulle-sde install --prefix /usr/local \
-   https://github.com/mulle-concurrent/mulle-fifo/archive/latest.tar.gz
+   https://github.com///archive/latest.tar.gz
 ```
 
 ### Manual Installation
 
-
 Install the requirements:
 
-Requirements                                               | Description
------------------------------------------------------------|-----------------------
-[mulle-allocator](//github.com/mulle-c/mulle-allocator)    | Memory allocation wrapper
-[mulle-thread](//github.com/mulle-concurrent/mulle-thread) | Thread wrapper
+| Requirements                                 | Description
+|----------------------------------------------|-----------------------
+| [mulle-thread](https://github.com/mulle-concurrent/mulle-thread)             | 🔠 Cross-platform thread/mutex/tss/atomic operations in C
+| [mulle-allocator](https://github.com/mulle-c/mulle-allocator)             | 🔄 Flexible C memory allocation scheme
 
-Install into `/usr/local`:
+Install **mulle-fifo** into `/usr/local` with [cmake](https://cmake.org):
 
 ``` sh
 cmake -B build \
@@ -120,7 +134,8 @@ cmake --build build --config Release &&
 cmake --install build --config Release
 ```
 
-### Steal
+## Author
 
-Read [STEAL.md](//github.com/mulle-c11/dox/STEAL.md) on how to steal the
-source code and incorporate it in your own projects.
+[Nat!](https://mulle-kybernetik.com/weblog) for Mulle kybernetiK
+
+
