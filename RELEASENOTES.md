@@ -1,3 +1,7 @@
+### 0.1.1
+
+* remove package.json as it conflicts with clib.json
+
 ## 0.1.0
 
 * added NULL checking variations of `mulle_pointerfifo` functions
