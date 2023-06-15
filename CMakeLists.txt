@@ -28,7 +28,7 @@ include( Files)
 if( HEADERS_PHASE)
    install( FILES ${INSTALL_PUBLIC_HEADERS}  DESTINATION "include/${PROJECT_NAME}")
    install( FILES ${INSTALL_PRIVATE_HEADERS} DESTINATION "include/${PROJECT_NAME}/private")
-   install( FILES ${INSTALL_CMAKE_INCLUDES}          DESTINATION "include/${PROJECT_NAME}/cmake")
+   install( FILES ${INSTALL_CMAKE_INCLUDES}  DESTINATION "include/${PROJECT_NAME}/cmake")
 
    # short cut out
    if( NOT COMPILE_PHASE AND NOT LINK_PHASE)
@@ -45,6 +45,10 @@ include( Library)
 # use LIBRARY_COMPILE_TARGET for compiler options
 target_compile_definitions( "${LIBRARY_COMPILE_TARGET}" PUBLIC)
 target_compile_options( "${LIBRARY_COMPILE_TARGET}" PUBLIC)
+if( NOT MSVC)
+   target_compile_options( "${LIBRARY_COMPILE_TARGET}" PUBLIC -Wunused)
+endif()
+
 # use LIBRARY_LINK_TARGET for linker options
 if( LINK_PHASE)
    target_link_options( "${LIBRARY_LINK_TARGET}" PUBLIC)
