@@ -13,7 +13,7 @@ You can easily create your own custom size.
 
 | Release Version                                       | Release Notes
 |-------------------------------------------------------|--------------
-| ![Mulle kybernetiK tag](https://img.shields.io/github/tag//mulle-fifo.svg?branch=release) [![Build Status](https://github.com//mulle-fifo/workflows/CI/badge.svg?branch=release)](//github.com//mulle-fifo/actions)| [RELEASENOTES](RELEASENOTES.md) |
+| ![Mulle kybernetiK tag](https://img.shields.io/github/tag/mulle-concurrent/mulle-fifo.svg?branch=release) [![Build Status](https://github.com/mulle-concurrent/mulle-fifo/workflows/CI/badge.svg?branch=release)](//github.com/mulle-concurrent/mulle-fifo/actions)| [RELEASENOTES](RELEASENOTES.md) |
 
 
 
@@ -118,7 +118,7 @@ Use [mulle-sde](//github.com/mulle-sde) to build and install mulle-fifo and all 
 
 ``` sh
 mulle-sde install --prefix /usr/local \
-   https://github.com///archive/latest.tar.gz
+   https://github.com/mulle-concurrent/mulle-fifo/archive/latest.tar.gz
 ```
 
 ### Manual Installation
@@ -129,6 +129,8 @@ Install the requirements:
 |----------------------------------------------|-----------------------
 | [mulle-thread](https://github.com/mulle-concurrent/mulle-thread)             | 🔠 Cross-platform thread/mutex/tss/atomic operations in C
 | [mulle-allocator](https://github.com/mulle-c/mulle-allocator)             | 🔄 Flexible C memory allocation scheme
+
+Download the latest [tar](https://github.com/mulle-concurrent/mulle-fifo/archive/refs/tags/latest.tar.gz) or [zip](https://github.com/mulle-concurrent/mulle-fifo/archive/refs/tags/latest.zip) archive and unpack it.
 
 Install **mulle-fifo** into `/usr/local` with [cmake](https://cmake.org):
 
