@@ -15,7 +15,7 @@ You can easily create your own custom size.
 
 | Release Version                                       | Release Notes
 |-------------------------------------------------------|--------------
-| ![Mulle kybernetiK tag](https://img.shields.io/github/tag/mulle-concurrent/mulle-fifo.svg?branch=release) [![Build Status](https://github.com/mulle-concurrent/mulle-fifo/workflows/CI/badge.svg?branch=release)](//github.com/mulle-concurrent/mulle-fifo/actions) | [RELEASENOTES](RELEASENOTES.md) |
+| ![Mulle kybernetiK tag](https://img.shields.io/github/tag/mulle-concurrent/mulle-fifo.svg) [![Build Status](https://github.com/mulle-concurrent/mulle-fifo/workflows/CI/badge.svg)](//github.com/mulle-concurrent/mulle-fifo/actions) | [RELEASENOTES](RELEASENOTES.md) |
 
 
 
