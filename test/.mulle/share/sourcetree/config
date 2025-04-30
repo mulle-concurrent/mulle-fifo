@@ -1,1 +1,1 @@
-mulle-fifo;${MULLE__FIFO_NODETYPE:-tar};;BC338EDE-4AF8-44EA-B6FB-632AA86079A6;${MULLE__FIFO_URL:-https://github.com/nat/mulle-fifo/archive/${MULLE_TAG}.tar.gz};${MULLE__FIFO_BRANCH};${MULLE__FIFO_TAG:-latest};;
+mulle-fifo;${MULLE__FIFO_NODETYPE:-tar};;762987C7-D5C2-46C0-9C7F-53914FF380EC;${MULLE__FIFO_URL:-https://github.com/mulle-nat/mulle-fifo/archive/${MULLE_TAG}.tar.gz};${MULLE__FIFO_BRANCH};${MULLE__FIFO_TAG:-latest};;
