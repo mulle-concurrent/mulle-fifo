@@ -8,6 +8,7 @@
       repo="mulle-fifo";
       homepage="https://github.com/mulle-concurrent/mulle-fifo";
       license="BSD-3-Clause";
+      version="0.1.5";
    };
    dependencies =
    (
