@@ -1,4 +1,5 @@
 # mulle-fifo Library Documentation for AI
+<!-- Keywords: lock-free, queue -->
 
 ## 1. Introduction & Purpose
 
