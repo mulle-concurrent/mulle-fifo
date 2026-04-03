@@ -1,11 +1,12 @@
 {
    "name" : "mulle-fifo",
-   "version" : "0.1.5",
+   "version" : "20",
    "description" : "🐍 mulle-fifo fixed sized producer/consumer FIFOs holding `void *`",
    "keywords" : [],
    "license" : "BSD-3-Clause",
    "repo" : "mulle-concurrent/mulle-fifo",
    "src" : [
+      "asset/dox/TOC.md",
       "src/generic/include-private.h",
       "src/generic/include.h",
       "src/mulle--pointerfifo1024.h",
