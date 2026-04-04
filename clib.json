@@ -1,6 +1,6 @@
 {
    "name" : "mulle-fifo",
-   "version" : "20",
+   "version" : "0.1.6",
    "description" : "🐍 mulle-fifo fixed sized producer/consumer FIFOs holding `void *`",
    "keywords" : [],
    "license" : "BSD-3-Clause",
