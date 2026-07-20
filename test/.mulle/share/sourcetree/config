@@ -1,1 +1,1 @@
-mulle-fifo;${MULLE__FIFO_NODETYPE:-tar};;924DCC57-2719-4740-AA7A-727CAD889B3F;${MULLE__FIFO_URL:-https://github.com/nat/mulle-fifo/archive/${MULLE_TAG}.tar.gz};${MULLE__FIFO_BRANCH};${MULLE__FIFO_TAG:-latest};;
+mulle-fifo;${MULLE__FIFO_NODETYPE:-tar};;6FFDA7C7-5D67-4F36-81D2-A0A12646485C;${MULLE__FIFO_URL:-https://github.com/mulle-kybernetik-tv/mulle-fifo/archive/${MULLE_TAG}.tar.gz};${MULLE__FIFO_BRANCH};${MULLE__FIFO_TAG:-latest};;
