@@ -19,6 +19,11 @@ You can easily create your own custom size.
 
 
 
+
+## Documentation & Guides
+
+* [API Summary](asset/dox/api/toc)
+
 ## Usage
 
 ### Fixed
