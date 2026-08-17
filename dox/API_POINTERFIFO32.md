@@ -1,104 +1,106 @@
-# mulle-pointerfifo32
+# mulle__pointerfifo32
 
-This library provides a fixed-size, thread-safe FIFO queue for pointers in C.
+`mulle__pointerfifo32` is one of the fixed-size pointer FIFOs. The available
+sizes are 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096 and 8192
+pointers; replace the `32` in the type and function names with the desired
+size (e.g. `struct mulle__pointerfifo64`, `_mulle__pointerfifo64_write`).
+The storage is part of the struct, so a fixed FIFO needs no allocator and
+can live on the stack or in static memory.
+
+Like the dynamically sized [mulle_pointerfifo](API_POINTERFIFO.md), it is a
+bounded, non-blocking FIFO for exactly **one producer thread and one
+consumer thread** (SPSC). `NULL` can not be stored, because `NULL` signals
+"empty" on read.
+
+All functions of the fixed FIFOs are underscore-prefixed: they do not check
+their `fifo` argument for `NULL`. There are no NULL-tolerant wrapper
+variants.
+
 
 ## Functions
 
-### `mulle_pointerfifo32_init`
+### _mulle__pointerfifo32_init
 
 ```c
-void mulle_pointerfifo32_init( struct mulle_pointerfifo32 *p_fifo);
+void   _mulle__pointerfifo32_init( struct mulle__pointerfifo32 *p);
 ```
 
-Initializes a pointer FIFO with the specified capacity.
+Initializes the FIFO. Must complete before producer or consumer start.
 
-- `p_fifo`: pointer to the pointer FIFO to initialize
 
-### `mulle_pointerfifo32_done`
+### _mulle__pointerfifo32_done
 
 ```c
-void mulle_pointerfifo32_done( struct mulle_pointerfifo32 *p_fifo);
+void   _mulle__pointerfifo32_done( struct mulle__pointerfifo32 *p);
 ```
 
-Destroys a pointer FIFO.
+Does nothing: the storage is part of the struct, so there is nothing to
+free. Provided for symmetry with the dynamic FIFO.
 
-- `p_fifo`: pointer to the pointer FIFO to destroy
 
-### `mulle_pointerfifo32_push`
+### _mulle__pointerfifo32_write
 
 ```c
-void mulle_pointerfifo32_push( struct mulle_pointerfifo32 *p_fifo,
-                               void                       *p_value);
+int   _mulle__pointerfifo32_write( struct mulle__pointerfifo32 *p,
+                                   void                        *pointer);
 ```
 
-Pushes a value onto the back of a pointer FIFO.
+Adds `pointer` to the rear of the FIFO. Returns `0` on success, `-1` if the
+FIFO is full, and `-2` if `pointer` is `NULL`. Never blocks.
 
-- `p_fifo`: pointer to the pointer FIFO to push onto
-- `p_value`: pointer to the value to push onto the FIFO
+Only the producer thread may call this function.
 
-### `mulle_pointerfifo32_pop`
+
+### _mulle__pointerfifo32_read
 
 ```c
-void *mulle_pointerfifo32_pop( struct mulle_pointerfifo32 *p_fifo);
+void   *_mulle__pointerfifo32_read( struct mulle__pointerfifo32 *p);
 ```
 
-Pops a value from the front of a pointer FIFO.
+Removes and returns the oldest pointer in the FIFO, or `NULL` if the FIFO is
+empty. Never blocks.
 
-- `p_fifo`: pointer to the pointer FIFO to pop from
+Only the consumer thread may call this function.
 
-Returns a pointer to the value popped from the FIFO, or `NULL` if the FIFO is empty.
 
-### `mulle_pointerfifo32_count`
+### _mulle__pointerfifo32_get_count
 
 ```c
-size_t mulle_pointerfifo32_count( struct mulle_pointerfifo32 *p_fifo);
+unsigned int   _mulle__pointerfifo32_get_count( struct mulle__pointerfifo32 *p);
 ```
 
-Returns the number of elements in a pointer FIFO.
+Returns the number of pointers currently stored. This is a single atomic
+read of the shared counter: the value is exact at the moment it is read,
+but may be stale by the time the caller acts on it. May be called from any
+thread.
 
-- `p_fifo`: pointer to the pointer FIFO to count the elements of
 
-Returns the number of elements in the FIFO.
-
-### `mulle_pointerfifo32_is_full`
-
-```c
-int mulle_pointerfifo32_is_full( struct mulle_pointerfifo32 *p_fifo);
-```
-
-Checks if a pointer FIFO is full.
-
-- `p_fifo`: pointer to the pointer FIFO to check if full
-
-Returns `1` if the FIFO is full, `0` otherwise.
-
-### `mulle_pointerfifo32_is_empty`
+## Example
 
 ```c
-int mulle_pointerfifo32_is_empty( struct mulle_pointerfifo32 *p_fifo);
-```
+#include <mulle-fifo/mulle-fifo.h>
 
-Checks if a pointer FIFO is empty.
-
-- `p_fifo`: pointer to the pointer FIFO to check if empty
-
-Returns `1` if the FIFO is empty, `0` otherwise.
-
-## Example Usage
-
-```c
 #include <stdio.h>
-#include <stdlib.h>
-#include "mulle-pointerfifo32.h"
 
-int main() {
-  struct mulle_pointerfifo32 fifo;
-  mulle_pointerfifo32_init( &fifo);
-  int value = 42;
-  mulle_pointerfifo32_push( &fifo, &value);
-  void *popped_value = mulle_pointerfifo32_pop( &fifo);
-  printf("Popped value: %d\n", *(int*) popped_value);
-  mulle_pointerfifo32_done( &fifo);
-  return 0;
+
+int   main( void)
+{
+   struct mulle__pointerfifo32   fifo;
+   void                          *pointer;
+   int                           value;
+
+   _mulle__pointerfifo32_init( &fifo);
+
+   value = 42;
+   if( _mulle__pointerfifo32_write( &fifo, &value) == 0)
+      printf( "written\n");
+
+   pointer = _mulle__pointerfifo32_read( &fifo);
+   if( pointer)
+      printf( "read: %d\n", *(int *) pointer);
+
+   _mulle__pointerfifo32_done( &fifo);
+
+   return( 0);
 }
 ```
