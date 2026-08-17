@@ -7,8 +7,38 @@ FIFOs and there is a FIFO which size can be set at runtime.
 
 You can not store NULL pointers into the FIFOs.
 
-There are FIFOs of sizes 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192.
-You can easily create your own custom size.
+There are FIFOs of sizes 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096,
+8192. You can easily create your own custom size.
+
+## Contract
+
+* Exactly **one producer thread** may call the write functions and exactly
+  **one consumer thread** may call the read functions. Calls from additional
+  threads are forbidden (they corrupt the state, this is not detected).
+* `init` must complete before producer and consumer start, `done` must only
+  be called after both have stopped. Reuse requires a fresh `init`.
+* The FIFOs are **bounded and non-blocking**: writes fail instead of blocking
+  or growing, reads return NULL instead of blocking. A full FIFO is the
+  caller's problem: retry, back off, or drop.
+* The FIFO does **not take ownership** of the pointers stored in it. It never
+  frees or otherwise touches the pointed-to objects.
+* `write` returns `0` on success, `-1` if the FIFO is full and `-2` if the
+  pointer is NULL.
+* `get_count` is a single atomic read of the shared counter: exact at the
+  moment of the read, possibly stale immediately after. It may be called from
+  any thread.
+* All internal synchronization uses **sequentially consistent atomic
+  operations** (via mulle-thread). A successful `write` publishes both the
+  pointer value and the contents of the pointed-to object; a subsequent
+  `read` that observes the pointer may safely dereference it. No additional
+  barriers are required on either side.
+* The dynamic FIFO supports any capacity >= 2. Allocation failure follows the
+  mulle-allocator contract: the allocator's `fail` function is called, which by
+  default aborts the program. `done` of the dynamic FIFO is idempotent; `done`
+  of a fixed FIFO is a no-op.
+* Functions prefixed with an underscore do not check their fifo argument for
+  NULL. The dynamic FIFO additionally offers same-named NULL-tolerant wrappers
+  without the underscore.
 
 
 
@@ -28,8 +58,8 @@ You can easily create your own custom size.
 
 ### Fixed
 
-`mulle__pointerfifo64` is  a fixed size 64 pointer FIFO.
-Use `_mulle__pointerfifo128` for a 128 pointer FIFO etc.
+`mulle__pointerfifo64` is a fixed size 64 pointer FIFO.
+Use `mulle__pointerfifo128` for a 128 pointer FIFO etc.
 
 ``` c
 void   _mulle__pointerfifo64_init( struct mulle__pointerfifo64 *p)
@@ -49,7 +79,8 @@ You can call this when no other thread needs the FIFO anymore.
 unsigned int   _mulle__pointerfifo64_get_count( struct mulle__pointerfifo64 *p)
 ```
 
-Get the number of pointers stored. Thread safe even for multiple threads.
+Get the number of pointers stored. This is a single atomic read of the shared
+counter, safe to call from any thread.
 
 
 ``` c
@@ -64,7 +95,8 @@ int   _mulle__pointerfifo64_write( struct mulle__pointerfifo64 *p,
                                    void *pointer)
 ```
 
-Write to the FIFO. Will return -1 if full, 0 on success. Will not block.
+Write to the FIFO. Will return 0 on success, -1 if the FIFO is full and -2 if
+`pointer` is NULL. Will not block.
 Only one thread may access the write side.
 
 
@@ -99,29 +131,40 @@ This is necessary to avoid leaks. Use `mulle_pointerfifo_read` and
 
 ## Add
 
-**This project is a component of the [mulle-core](//github.com/mulle-core/mulle-core) library. As such you usually will *not* add or install it
-individually, unless you specifically do not want to link against
-`mulle-core`.**
+mulle-fifo is a component of the [mulle-core](//github.com/mulle-core/mulle-core) library. So in your code include the mulle-core umbrella header:
 
-
-### Add as an individual component
-
-Use [mulle-sde](//github.com/mulle-sde) to add mulle-fifo to your project:
-
-``` sh
-mulle-sde add github:mulle-concurrent/mulle-fifo
+``` c
+#include <mulle-core/mulle-core.h>
 ```
 
-To only add the sources of mulle-fifo with dependency
-sources use [clib](https://github.com/clibs/clib):
+### Add mulle-core to a cmake and git project
 
-
-``` sh
-clib install --out src/mulle-concurrent mulle-concurrent/mulle-fifo
+``` bash
+git submodule add https://github.com/mulle-core/mulle-core.git mulle-core
 ```
 
-Add `-isystem src/mulle-concurrent` to your `CFLAGS` and compile all the sources that were downloaded with your project.
+Add this to your `CMakeLists.txt`:
 
+``` cmake
+add_subdirectory( mulle-core)
+target_link_libraries( ${PROJECT_NAME} PRIVATE mulle-core)
+```
+
+
+### Add mulle-core to a mulle-sde project
+
+``` sh
+mulle-sde add github:mulle-core/mulle-core
+```
+
+### Embed mulle-fifo with clib
+
+``` sh
+clib install --out src mulle-concurrent/mulle-fifo
+```
+
+Append `src` to your include path (e.g. add `-isystem src`  to your `CFLAGS`)
+and compile all the sources that were downloaded.
 
 ## Install
 

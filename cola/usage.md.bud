@@ -2,8 +2,8 @@
 
 ### Fixed
 
-`mulle__pointerfifo64` is  a fixed size 64 pointer FIFO.
-Use `_mulle__pointerfifo128` for a 128 pointer FIFO etc.
+`mulle__pointerfifo64` is a fixed size 64 pointer FIFO.
+Use `mulle__pointerfifo128` for a 128 pointer FIFO etc.
 
 ``` c
 void   _mulle__pointerfifo64_init( struct mulle__pointerfifo64 *p)
@@ -23,7 +23,8 @@ You can call this when no other thread needs the FIFO anymore.
 unsigned int   _mulle__pointerfifo64_get_count( struct mulle__pointerfifo64 *p)
 ```
 
-Get the number of pointers stored. Thread safe even for multiple threads.
+Get the number of pointers stored. This is a single atomic read of the shared
+counter, safe to call from any thread.
 
 
 ``` c
@@ -38,7 +39,8 @@ int   _mulle__pointerfifo64_write( struct mulle__pointerfifo64 *p,
                                    void *pointer)
 ```
 
-Write to the FIFO. Will return -1 if full, 0 on success. Will not block.
+Write to the FIFO. Will return 0 on success, -1 if the FIFO is full and -2 if
+`pointer` is NULL. Will not block.
 Only one thread may access the write side.
 
 

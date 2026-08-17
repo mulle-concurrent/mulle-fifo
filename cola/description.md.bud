@@ -3,6 +3,36 @@ FIFOs and there is a FIFO which size can be set at runtime.
 
 You can not store NULL pointers into the FIFOs.
 
-There are FIFOs of sizes 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192.
-You can easily create your own custom size.
+There are FIFOs of sizes 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096,
+8192. You can easily create your own custom size.
+
+## Contract
+
+* Exactly **one producer thread** may call the write functions and exactly
+  **one consumer thread** may call the read functions. Calls from additional
+  threads are forbidden (they corrupt the state, this is not detected).
+* `init` must complete before producer and consumer start, `done` must only
+  be called after both have stopped. Reuse requires a fresh `init`.
+* The FIFOs are **bounded and non-blocking**: writes fail instead of blocking
+  or growing, reads return NULL instead of blocking. A full FIFO is the
+  caller's problem: retry, back off, or drop.
+* The FIFO does **not take ownership** of the pointers stored in it. It never
+  frees or otherwise touches the pointed-to objects.
+* `write` returns `0` on success, `-1` if the FIFO is full and `-2` if the
+  pointer is NULL.
+* `get_count` is a single atomic read of the shared counter: exact at the
+  moment of the read, possibly stale immediately after. It may be called from
+  any thread.
+* All internal synchronization uses **relaxed atomic operations**. There is no
+  acquire/release publication of pointee contents: if the consumer dereferences
+  a dequeued pointer, use `_read_barrier` (fixed FIFOs) and, on weakly ordered
+  architectures, add your own producer-side synchronization. Payload that fits
+  in the pointer itself (e.g. an integer cast to `void *`) needs no barrier.
+* The dynamic FIFO supports any capacity >= 2. Allocation failure follows the
+  mulle-allocator contract: the allocator's `fail` function is called, which by
+  default aborts the program. `done` of the dynamic FIFO is idempotent; `done`
+  of a fixed FIFO is a no-op.
+* Functions prefixed with an underscore do not check their fifo argument for
+  NULL. The dynamic FIFO additionally offers same-named NULL-tolerant wrappers
+  without the underscore.
 

@@ -1,88 +1,128 @@
-#  FIFO
+#  mulle_pointerfifo
 
-A FIFO (First-In-First-Out) is a data structure that follows the principle that the first element added to the container will be processed first. It is essentially a queue, where elements are inserted at the rear end and removed from the front end. FIFOs are used in various computer applications and have significant importance in scheduling algorithms and network communication. They provide a fair processing order, ensuring that the element that has entered first will get the opportunity to leave first. For more information, you can refer to the [Wikipedia page on Queue](https://en.wikipedia.org/wiki/Queue_(abstract_data_type)).
+A `mulle_pointerfifo` is a bounded, non-blocking FIFO queue for `void *`
+pointers, with its capacity chosen at runtime. It is designed for exactly
+**one producer thread and one consumer thread** (SPSC). It never grows,
+never blocks, and never allocates during read or write.
+
+The fixed-size variant is documented in [API_POINTERFIFO32](API_POINTERFIFO32.md).
+
+The functions prefixed with an underscore do not check their `fifo` argument
+for `NULL`. The same-named functions without the underscore are NULL-tolerant
+wrappers.
 
 
-### mulle__pointerfifo_init
+## Contract
+
+- Exactly one thread may call the write functions, exactly one thread may
+  call the read functions. Calls from additional threads are forbidden.
+- `init` must complete before producer or consumer start. `done` must only
+  be called after both have stopped.
+- The FIFO does not take ownership of the pointers stored in it. It never
+  frees or otherwise touches the pointed-to objects.
+- `NULL` can not be stored, because `NULL` signals "empty" on read.
+- All internal synchronization uses sequentially consistent atomic operations
+  (see `mulle-thread`). A successful `write` publishes both the pointer value
+  and the contents of the pointed-to object; a subsequent `read` that observes
+  the pointer may safely dereference it. No additional barriers are required.
+
+
+## Functions
+
+### mulle_pointerfifo_init
 
 ```c
-void   mulle__pointerfifo_init(struct mulle__pointerfifo *p, void *buf, size_t size, struct mulle_allocator *allocator);
+void   mulle_pointerfifo_init( struct mulle_pointerfifo  *p,
+                               unsigned int              size,
+                               struct mulle_allocator    *allocator);
 ```
 
-- **Function Signature**: `mulle__pointerfifo_init`
-- **Parameters**:
-  - `p`: A pointer to the `mulle__pointerfifo` structure.
-  - `buf`: A pointer to the memory buffer that will be used as the storage for the FIFO.
-  - `size`: The size (in number of elements) of the `buf` array.
-  - `allocator`: A pointer to the `mulle_allocator` structure that defines the memory allocation strategy to be used.
+Initializes the FIFO with room for `size` pointers. `size` must be at
+least 2 (checked with `assert`). Storage is allocated with `allocator`;
+if `allocator` is `NULL`, the default allocator is used. Allocation failure
+follows the `mulle_allocator` contract: the allocator's `fail` function is
+called, which by default aborts the program.
 
-This function initializes a `mulle__pointerfifo` structure with the provided parameters. It sets up the internal state of the FIFO, including the buffer, its size, and the allocator.
+`_mulle_pointerfifo_init` is the variant without the `NULL` check on `p`.
 
-### mulle__pointerfifo_done
+
+### mulle_pointerfifo_done
 
 ```c
-void   mulle__pointerfifo_done(struct mulle__pointerfifo *p);
+void   mulle_pointerfifo_done( struct mulle_pointerfifo *p);
 ```
 
-- **Function Signature**: `mulle__pointerfifo_done`
-- **Parameters**:
-  - `p`: A pointer to the `mulle__pointerfifo` structure.
+Frees the storage. Does not free or otherwise touch any pointers still in
+the FIFO; drain it first if that matters to you. It is safe to call `done`
+more than once. The FIFO must be re-initialized with `init` before reuse.
 
-This function cleans up the internal state of the `mulle__pointerfifo` structure and releases any resources held by it.
+`_mulle_pointerfifo_done` is the variant without the `NULL` check on `p`.
 
-### mulle__pointerfifo_write
+
+### mulle_pointerfifo_write
 
 ```c
-int   mulle__pointerfifo_write(struct mulle__pointerfifo *p, void *item);
+int   mulle_pointerfifo_write( struct mulle_pointerfifo *p,
+                               void                     *pointer);
 ```
 
-- **Function Signature**: `mulle__pointerfifo_write`
-- **Parameters**:
-  - `p`: A pointer to the `mulle__pointerfifo` structure.
-  - `item`: A pointer to the data item to be added to the FIFO.
+Adds `pointer` to the rear of the FIFO. Returns `0` on success, `-1` if the
+FIFO is full, and `-2` if `pointer` is `NULL`. Never blocks. The safe
+wrapper returns `-1` if `p` is `NULL`.
 
-This function writes an item to the `mulle__pointerfifo`. If the FIFO is full, it returns a non-zero value, otherwise, it returns zero.
+Only the producer thread may call this function.
 
-### mulle__pointerfifo_read
+
+### mulle_pointerfifo_read
 
 ```c
-void  *mulle__pointerfifo_read(struct mulle__pointerfifo *p);
+void   *mulle_pointerfifo_read( struct mulle_pointerfifo *p);
 ```
 
-- **Function Signature**: `mulle__pointerfifo_read`
-- **Parameters**:
-  - `p`: A pointer to the `mulle__pointerfifo` structure.
+Removes and returns the oldest pointer in the FIFO, or `NULL` if the FIFO is
+empty. Never blocks. The safe wrapper returns `NULL` if `p` is `NULL`.
 
-This function reads an item from the `mulle__pointerfifo`. If the FIFO is empty, it returns `NULL`, otherwise, it returns a pointer to the read item.
+Only the consumer thread may call this function.
 
-### Example
 
-Here is an example of how to use these functions:
+### mulle_pointerfifo_get_count
 
 ```c
-#include "mulle--pointerfifo.h"
-#include "mulle-allocator.h"
+unsigned int   mulle_pointerfifo_get_count( struct mulle_pointerfifo *p);
+```
 
-int main() {
-    struct mulle__pointerfifo fifo;
-    struct mulle_allocator *allocator = &mulle_default_allocator;
-    void *buffer[10];
+Returns the number of pointers currently stored. This is a single atomic
+read of the shared counter: the value is exact at the moment it is read,
+but may be stale by the time the caller acts on it. May be called from any
+thread. The safe wrapper returns `0` if `p` is `NULL`.
 
-    mulle__pointerfifo_init(&fifo, buffer, 10, allocator);
 
-    int value = 42;
-    if (mulle__pointerfifo_write(&fifo, &value) == 0) {
-        printf("Value written to the FIFO.\n");
-    }
+## Example
 
-    int *read_value = mulle__pointerfifo_read(&fifo);
-    if (read_value != NULL) {
-        printf("Value read from the FIFO: %d\n", *read_value);
-    }
+```c
+#include <mulle-fifo/mulle-fifo.h>
 
-    mulle__pointerfifo_done(&fifo);
-    return 0;
+#include <stdio.h>
+
+
+int   main( void)
+{
+   struct mulle_pointerfifo   fifo;
+   void                       *pointer;
+   int                        value;
+
+   mulle_pointerfifo_init( &fifo, 16, NULL);
+
+   value = 42;
+   if( mulle_pointerfifo_write( &fifo, &value) == 0)
+      printf( "written\n");
+
+   pointer = mulle_pointerfifo_read( &fifo);
+   if( pointer)
+      printf( "read: %d\n", *(int *) pointer);
+
+   mulle_pointerfifo_done( &fifo);
+
+   return( 0);
 }
 ```
-
-This example initializes a `mulle__pointerfifo` with a buffer of size 10, writes an integer value to the FIFO, reads the value back, and then cleans up the FIFO.
