@@ -39,8 +39,11 @@ static mulle_thread_rval_t   fixed_producer( void *arg)
 {
    intptr_t         i;
    struct payload   *p;
+   intptr_t         n_items;
 
-   for( i = 0; i < N_ITEMS; i++)
+   n_items = (intptr_t) arg;
+
+   for( i = 0; i < n_items; i++)
    {
       p = &fixed_items[ i];
       p->sequence = i;
@@ -49,34 +52,37 @@ static mulle_thread_rval_t   fixed_producer( void *arg)
       p->pad[ 5]  = i * 7;
 
       while( _mulle__pointerfifo32_write( &fixed_fifo, p) == -1)
-         ;  // spin
+         mulle_thread_yield();
    }
 
    mulle_thread_return();
 }
 
 
-static int   run_fixed_test( void)
+static int   run_fixed_test( intptr_t n_items)
 {
    struct payload   *p;
    intptr_t          expect;
    intptr_t          corrupt;
-   int               received;
+   intptr_t          received;
    mulle_thread_t    thread;
 
    _mulle__pointerfifo32_init( &fixed_fifo);
 
-   mulle_thread_create( fixed_producer, NULL, &thread);
+   mulle_thread_create( fixed_producer, (void *) n_items, &thread);
 
    corrupt  = 0;
    expect   = 0;
    received = 0;
 
-   while( received < N_ITEMS)
+   while( received < n_items)
    {
       p = _mulle__pointerfifo32_read( &fixed_fifo);
       if( ! p)
-         continue;  // spin
+      {
+         mulle_thread_yield();
+         continue;
+      }
 
       if( p->sequence != expect)
          ++corrupt;
@@ -108,8 +114,11 @@ static mulle_thread_rval_t   dynamic_producer( void *arg)
 {
    intptr_t         i;
    struct payload   *p;
+   intptr_t         n_items;
 
-   for( i = 0; i < N_ITEMS; i++)
+   n_items = (intptr_t) arg;
+
+   for( i = 0; i < n_items; i++)
    {
       p = &dynamic_items[ i];
       p->sequence = i;
@@ -118,34 +127,37 @@ static mulle_thread_rval_t   dynamic_producer( void *arg)
       p->pad[ 5]  = i * 7;
 
       while( _mulle_pointerfifo_write( &dynamic_fifo, p) == -1)
-         ;  // spin
+         mulle_thread_yield();
    }
 
    mulle_thread_return();
 }
 
 
-static int   run_dynamic_test( void)
+static int   run_dynamic_test( intptr_t n_items)
 {
    struct payload   *p;
    intptr_t          expect;
    intptr_t          corrupt;
-   int               received;
+   intptr_t          received;
    mulle_thread_t    thread;
 
    _mulle_pointerfifo_init( &dynamic_fifo, DYNAMIC_SIZE, NULL);
 
-   mulle_thread_create( dynamic_producer, NULL, &thread);
+   mulle_thread_create( dynamic_producer,  (void *) n_items, &thread);
 
    corrupt  = 0;
    expect   = 0;
    received = 0;
 
-   while( received < N_ITEMS)
+   while( received < n_items)
    {
       p = _mulle_pointerfifo_read( &dynamic_fifo);
       if( ! p)
-         continue;  // spin
+      {
+         mulle_thread_yield();
+         continue;
+      }
 
       if( p->sequence != expect)
          ++corrupt;
@@ -169,14 +181,18 @@ static int   run_dynamic_test( void)
 
 int   main( int argc, char *argv[])
 {
-   int   fixed_corrupt;
-   int   dynamic_corrupt;
+   int        fixed_corrupt;
+   int        dynamic_corrupt;
+   intptr_t   n_items = N_ITEMS;
 
-   fixed_corrupt   = run_fixed_test();
-   dynamic_corrupt = run_dynamic_test();
+   if( getenv( "MULLE_TEST_VALGRIND") != NULL)
+      n_items /= 1000;
 
-   printf( "fixed32:  %d items, %d corrupt\n", N_ITEMS, fixed_corrupt);
-   printf( "dynamic%d: %d items, %d corrupt\n", DYNAMIC_SIZE, N_ITEMS, dynamic_corrupt);
+   fixed_corrupt   = run_fixed_test( n_items);
+   dynamic_corrupt = run_dynamic_test( n_items);
+
+   printf( "fixed32:  %ld items, %d corrupt\n", (long) n_items, fixed_corrupt);
+   printf( "dynamic%d: %ld items, %d corrupt\n", DYNAMIC_SIZE, (long) n_items, dynamic_corrupt);
 
    return( (fixed_corrupt || dynamic_corrupt) ? 1 : 0);
 }
