@@ -27,11 +27,11 @@ There are FIFOs of sizes 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096,
 * `get_count` is a single atomic read of the shared counter: exact at the
   moment of the read, possibly stale immediately after. It may be called from
   any thread.
-* All internal synchronization uses **sequentially consistent atomic
-  operations** (via mulle-thread). A successful `write` publishes both the
-  pointer value and the contents of the pointed-to object; a subsequent
-  `read` that observes the pointer may safely dereference it. No additional
-  barriers are required on either side.
+* All internal synchronization uses **relaxed atomic operations**. There is no
+  acquire/release publication of pointee contents: if the consumer dereferences
+  a dequeued pointer, use `_read_barrier` (fixed FIFOs) and, on weakly ordered
+  architectures, add your own producer-side synchronization. Payload that fits
+  in the pointer itself (e.g. an integer cast to `void *`) needs no barrier.
 * The dynamic FIFO supports any capacity >= 2. Allocation failure follows the
   mulle-allocator contract: the allocator's `fail` function is called, which by
   default aborts the program. `done` of the dynamic FIFO is idempotent; `done`
