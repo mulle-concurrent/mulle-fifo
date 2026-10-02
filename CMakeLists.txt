@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 3.13...99.99)
 
-project( mulle-fifo VERSION 0.1.8 LANGUAGES C)
+project( mulle-fifo VERSION 0.1.9 LANGUAGES C)
 
 
 #
@@ -57,8 +57,8 @@ endif()
 include( InstallLibrary)
 
 if( LINK_PHASE)
-   include( InstallCMakeInclude)
-   include( InstallCMakePackage)
+   include( AddSubdirectorySupport)
+   include( FindPackageSupport)
 endif()
 
 include( FinalOutput OPTIONAL)
