@@ -3,6 +3,7 @@
 
 
 
+
 * Note `mulle-thread` >= 4.11.0 and `mulle-allocator` >= 9.0.0 in the API docs
 
 ### 0.1.8
