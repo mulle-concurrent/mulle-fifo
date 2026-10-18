@@ -3,12 +3,13 @@
    {
       description="🐍 mulle-fifo fixed sized producer/consumer FIFOs holding `void *`";
       domain="github";
+      language="c";
+      dialect="c";
       name="mulle-fifo";
       user="mulle-concurrent";
       repo="mulle-fifo";
       homepage="https://github.com/mulle-concurrent/mulle-fifo";
       license="BSD-3-Clause";
-       version="0.1.9";
    };
    dependencies =
    (
